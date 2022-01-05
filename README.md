@@ -87,10 +87,12 @@ module.rules
 |名称 | 描述|
 |:----:|:----:|
 |babel-loader | 转换es6 es7等js新特性语法|
-|css-loader | 支持.css文件加载解析|
-|less-loader | 支持.less文件转换成css|
-|ts-loader |支持.ts文件转换成js|
-|file-loader | 进行图片 字体等打包|
+|style-loader | 把 CSS 插入到 DOM 中 |
+|css-loader | 支持.css文件加载解析 |
+|less-loader | 支持.less文件转换成css |
+|ts-loader | 支持.ts文件转换成js |
+|url-loader | 将文件作为 data URI 内联到 bundle 中 limit: 单位Byte 常用8kb 8 * 1024 = 8192 减少http请求 超出的使用file-loader处理|
+|file-loader | 进行图片 字体等打包 将文件发送到输出目录 woff otf 字体文件 |
 |raw-loader | 将文件以字符串的形式导入|
 |thread-loader | 多进程打包js css |
 
