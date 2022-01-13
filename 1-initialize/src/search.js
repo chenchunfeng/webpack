@@ -4,12 +4,13 @@ import React from "react";
 import ReactDom from "react-dom" 
 import './search.less';
 import img from "./images/webpack.jpg"
+import txt from "./hello.txt"
 
 class Search extends React.Component {
   render() {
     return <div >
-      <span className="search-text">测试</span>
-      <img src={ img }></img>
+      <span className="search-text">{txt}</span>
+      <img src={ img } className="search-img"></img>
       </div>
   }
 }

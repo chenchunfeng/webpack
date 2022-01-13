@@ -2,7 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
-    // index: './src/index.js',
+    index: './src/index.js',
     search: './src/search.js'
   },
   output: {
@@ -35,17 +35,32 @@ module.exports = {
       {
         test: /.(woff|woff2|eot|ttf|otf)$/,
         // type: 'asset/resource', webpack 5
-        use: {
+        use: [
+        {
           loader: 'file-loader', 
           options: {
-            name: 'fonts/[name]-[hash:8].[ext]'
+            name: 'fonts/[name]-[hash:8].[ext]',
+            esModule: false
           }
-        },
-
+        }],
+        type: 'javascript/auto'
+      },
+      {
+        test: /.txt$/,
+        // type: 'asset/resource', webpack 5
+        use: [
+        {
+          loader: 'raw-loader', 
+          options: {
+            esModule: false
+          }
+        }],
+        type: 'javascript/auto'
       }
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({template: './src/search.html'})
+    new HtmlWebpackPlugin({template: './src/index.html', filename: 'index.html',chunks: ['index'],}),
+    new HtmlWebpackPlugin({template: './src/search.html', filename: 'search.html',chunks: ['search'],}),
   ]
 }

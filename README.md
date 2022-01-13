@@ -102,3 +102,64 @@ module.export = {
   entry: ''
 }
 ```
+
+注意webpack5已经弃用 raw-loader  url-loader file-loader   https://webpack.docschina.org/guides/asset-modules#root
+
+如果要兼容
+
+```javascript
+      {
+        test: /.(woff|woff2|eot|ttf|otf)$/,
+        // type: 'asset/resource', webpack 5
+        use: [
+        {
+          loader: 'file-loader', 
+          options: {
+            name: 'fonts/[name]-[hash:8].[ext]',
+            esModule: false     // 添加
+          }
+        }],
+        type: 'javascript/auto' // 添加
+      }
+```
+
+
+
+**module.plugin**
+插件⽤用于 bundle 文件的优化，资源管理和环境变量注入作⽤用于整个构建过程
+
+|名称 | 描述|
+|:----:|:----:|
+|HtmlWebpackPlugin | 创建html文件去显示输入的bundle文件 多入口的话，可以配置多个 默认为index.html|
+|style-loader | 把 CSS 插入到 DOM 中 |
+|css-loader | 支持.css文件加载解析 |
+|less-loader | 支持.less文件转换成css |
+|ts-loader | 支持.ts文件转换成js |
+|url-loader | 将文件作为 data URI 内联到 bundle 中 limit: 单位Byte 常用8kb 8 * 1024 = 8192 减少http请求 超出的使用file-loader处理|
+|file-loader | 进行图片 字体等打包 将文件发送到输出目录 woff otf 字体文件 |
+|raw-loader | 将文件以字符串的形式导入|
+|thread-loader | 多进程打包js css |
+
+
+**module.watch** 监听文件变化
+
+可以在配置文件里面添加watch true的参数 也可以在script 添加webpack --watch
+
+原理:
+
+轮询判断⽂文件的最后编辑时间是否变化
+某个⽂文件发⽣生了了变化，并不不会⽴立刻告诉监听者，⽽而是先缓存起来，等 aggregateTimeout
+```javascript
+module.export = {
+  //默认 false，也就是不不开启
+  watch: true,
+  //只有开启监听模式时，watchOptions才有意义
+  watchOptions: {
+  //默认为空，不监听的文件或者文件夹，支持正则匹配
+  ignored: /node_modules/,
+  //监听到变化发生后会等300ms再去执行，默认300ms
+  aggregateTimeout: 300,
+  //判断文件是否发生变化是通过不停询问系统指定文件有没有变化实现的，默认每秒问1000次
+  poll: 1000
+}
+```
