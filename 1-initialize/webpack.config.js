@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -7,7 +8,7 @@ module.exports = {
   },
   output: {
     path: __dirname + '/dist',
-    filename: '[name].js',
+    filename: '[name].[chunkhash].js',
   },
   mode: 'production',
   module: {
@@ -62,5 +63,6 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({template: './src/index.html', filename: 'index.html',chunks: ['index'],}),
     new HtmlWebpackPlugin({template: './src/search.html', filename: 'search.html',chunks: ['search'],}),
+    new CleanWebpackPlugin()
   ]
 }

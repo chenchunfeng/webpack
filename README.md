@@ -131,7 +131,7 @@ module.export = {
 |名称 | 描述|
 |:----:|:----:|
 |HtmlWebpackPlugin | 创建html文件去显示输入的bundle文件 多入口的话，可以配置多个 默认为index.html|
-|style-loader | 把 CSS 插入到 DOM 中 |
+|CleanWebpackPlugin | 清理构建（output）目录文件夹 注意 hash chunkhash的区别|
 |css-loader | 支持.css文件加载解析 |
 |less-loader | 支持.less文件转换成css |
 |ts-loader | 支持.ts文件转换成js |
