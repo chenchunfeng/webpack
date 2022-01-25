@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { HotModuleReplacementPlugin } = require('webpack');
 
 module.exports = {
   entry: {
@@ -10,7 +11,7 @@ module.exports = {
     path: __dirname + '/dist',
     filename: '[name].[chunkhash].js',
   },
-  mode: 'production',
+  mode: 'development',
   module: {
     rules: [
       { 
@@ -63,6 +64,11 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({template: './src/index.html', filename: 'index.html',chunks: ['index'],}),
     new HtmlWebpackPlugin({template: './src/search.html', filename: 'search.html',chunks: ['search'],}),
-    new CleanWebpackPlugin()
-  ]
+    new CleanWebpackPlugin(),
+    new HotModuleReplacementPlugin(),
+  ],
+  devServer: {
+    static: __dirname + '/dist',
+    hot: true
+  }
 }

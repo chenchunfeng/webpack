@@ -34,7 +34,7 @@ module.exports = {
 - plugins
 - mode
 
-**entry**
+## **entry**
 
 单入口、多入口
 
@@ -53,7 +53,7 @@ module.exports = {
 
 ```
 
-**output**
+## **output**
 ```javascript
 //单入口
 module.exports = {
@@ -81,15 +81,15 @@ module.exports = {
 module.rules
 
 
-**module.rules**  用于对模块的源代码进行转换, 原本只支持js/json
+## **module.rules**  用于对模块的源代码进行转换, 原本只支持js/json
 
 
-|名称 | 描述|
-|:----:|:----:|
-|babel-loader | 转换es6 es7等js新特性语法|
-|style-loader | 把 CSS 插入到 DOM 中 |
-|css-loader | 支持.css文件加载解析 |
-|less-loader | 支持.less文件转换成css |
+| 名称 | 描述|
+|:----|:----|
+|  babel-loader | 转换es6 es7等js新特性语法|
+| style-loader | 把 CSS 插入到 DOM 中 |
+| css-loader | 支持.css文件加载解析 |
+| less-loader | 支持.less文件转换成css |
 |ts-loader | 支持.ts文件转换成js |
 |url-loader | 将文件作为 data URI 内联到 bundle 中 limit: 单位Byte 常用8kb 8 * 1024 = 8192 减少http请求 超出的使用file-loader处理|
 |file-loader | 进行图片 字体等打包 将文件发送到输出目录 woff otf 字体文件 |
@@ -125,23 +125,33 @@ module.export = {
 
 
 
-**module.plugin**
+## **module.plugin**
 插件⽤用于 bundle 文件的优化，资源管理和环境变量注入作⽤用于整个构建过程
 
 |名称 | 描述|
-|:----:|:----:|
+|:----:|:----|
 |HtmlWebpackPlugin | 创建html文件去显示输入的bundle文件 多入口的话，可以配置多个 默认为index.html|
-|CleanWebpackPlugin | 清理构建（output）目录文件夹 注意 hash chunkhash的区别|
-|css-loader | 支持.css文件加载解析 |
-|less-loader | 支持.less文件转换成css |
-|ts-loader | 支持.ts文件转换成js |
-|url-loader | 将文件作为 data URI 内联到 bundle 中 limit: 单位Byte 常用8kb 8 * 1024 = 8192 减少http请求 超出的使用file-loader处理|
-|file-loader | 进行图片 字体等打包 将文件发送到输出目录 woff otf 字体文件 |
-|raw-loader | 将文件以字符串的形式导入|
-|thread-loader | 多进程打包js css |
+|CleanWebpackPlugin | 清理构建（output）目录文件夹 注意 hash chunkhash的区别    webpack output 参数配置clean: true |
+|CopyWebpackPlugin | 文件拷到构建目录 |
+|UglifyjsWebpackPlugin | js 压缩 |
 
 
-**module.watch** 监听文件变化
+## **module.mode**
+
+- development
+- production
+- none
+
+|选项	|描述|
+|:----|:----|
+|development	|会将 DefinePlugin 中 process.env.NODE_ENV 的值设置为 development. 为模块和 chunk 启用有效的名。|
+|production	|会将 DefinePlugin 中 process.env.NODE_ENV 的值设置为 production。为模块和 chunk 启用确定性的混淆名称，FlagDependencyUsagePlugin，FlagIncludedChunksPlugin，ModuleConcatenationPlugin，NoEmitOnErrorsPlugin 和 TerserPlugin 。|
+|none	|不使用任何默认优化选项|
+
+如果没有设置，webpack 会给 mode 的默认值设置为 production。
+
+
+## **module.watch** 监听文件变化
 
 可以在配置文件里面添加watch true的参数 也可以在script 添加webpack --watch
 
@@ -163,3 +173,13 @@ module.export = {
   poll: 1000
 }
 ```
+
+> 这种方法的缺点就是要刷新浏览器才能显示新内容
+
+**热更新**
+- webpack-dev-server wds 不需要刷新浏览器 不输出文件，放在内存中 
+  - 添加 webpack-dev-serve --open
+  - mode: 'development' 
+  - config 里面添加 devServer: {contentBase: './dist', hot: true}   webpack-dev-server v4 hot默认为true contentBase 改为static
+  - 添加webpackHotReplacementPlugin 
+- webpack-dev-middleware WDM 将 webpack 输出的⽂文件传输给服务器
