@@ -133,6 +133,7 @@ module.export = {
 |HtmlWebpackPlugin | 创建html文件去显示输入的bundle文件 多入口的话，可以配置多个 默认为index.html|
 |CleanWebpackPlugin | 清理构建（output）目录文件夹 注意 hash chunkhash的区别    webpack output 参数配置clean: true |
 |CopyWebpackPlugin | 文件拷到构建目录 |
+|mini-css-extra-plugin | css文件单独抽离，便于缓存。跟style-loader功能互斥 |
 |UglifyjsWebpackPlugin | js 压缩 |
 
 
@@ -183,3 +184,22 @@ module.export = {
   - config 里面添加 devServer: {contentBase: './dist', hot: true}   webpack-dev-server v4 hot默认为true contentBase 改为static
   - 添加webpackHotReplacementPlugin 
 - webpack-dev-middleware WDM 将 webpack 输出的⽂文件传输给服务器
+
+
+**文件指纹**
+
+Hash 整个项目相关，有一个文件修改，hash值都会变化
+ChunkHash 跟webpack打包chunk有关，一般对应output   HMR跟影响chunkHash生成
+ContentHash 跟文件内容相关，一般用于mini-css-extract-plugin
+
+
+<!-- webpack 打包过程 -->
+1. 源代码 很多module
+2. webpack 通过entry 进来，文件之间的引用关系，代码成不同的chunk
+3. webpack 给浏览器输入可阅读的bundle 文件
+  
+module -> chunk -> bundle
+
+指定webpack 打包配置文件 --config xxx
+
+> 虽然注意file-loader里面的hash 是指文件内容的hash 跟webpack项目的hash不一样
