@@ -177,7 +177,7 @@ module.export = {
 
 > 这种方法的缺点就是要刷新浏览器才能显示新内容
 
-**热更新**
+## **热更新**
 - webpack-dev-server wds 不需要刷新浏览器 不输出文件，放在内存中 
   - 添加 webpack-dev-serve --open
   - mode: 'development' 
@@ -186,7 +186,7 @@ module.export = {
 - webpack-dev-middleware WDM 将 webpack 输出的⽂文件传输给服务器
 
 
-**文件指纹**
+## **文件指纹**
 
 Hash 整个项目相关，有一个文件修改，hash值都会变化
 ChunkHash 跟webpack打包chunk有关，一般对应output   HMR跟影响chunkHash生成
@@ -203,3 +203,68 @@ module -> chunk -> bundle
 指定webpack 打包配置文件 --config xxx
 
 > 虽然注意file-loader里面的hash 是指文件内容的hash 跟webpack项目的hash不一样
+
+## **代码压缩**
+
+压缩的前提，生产环境才需要
+1. js 代码压缩    v5 production 配置默认optimization.minimize = true
+  - uglifyjs-webpack-plugin es6代码要配置ecma   
+  - parallel-uglifyJs-webpack-plugin 非官方维护
+  - terse-webpack-plugin  v5 内置
+```javascript
+
+  terserOptions: {
+    compress: {
+      drop_console: true, // 默认false. 传true的话会干掉console.*函数。如果你要干掉特定的函数比如console.info ，又想删掉后保留其参数中的副作用，那用pure_funcs来处理吧。
+      drop_debugger: true, // 默认true.
+      pure_funcs: ["console.log"],  // 假如返回值没被调用则可以安全移除的函数
+    },
+  }
+
+```
+
+2. css 压缩
+  - optimize-css-assets-webpack-plugin 配合cssnano
+  - css-minimizer-webpack-plugin 跟optimize-css-assets-webpack-plugin 一样，但在 source maps 和 assets 中使用查询字符串会更加准确，支持缓存和并发模式下运行。
+
+
+3. html 压缩
+  - html-webpack-plugin
+  ```javascript
+        new HtmlWebpackPlugin({
+            template: path.join(__dirname, 'src/index.html'),
+            filename: 'index.html',
+            chunks: ['index'],
+            inject: true, // inject?: 'body' | 'head' | boolean | undefined; 资源注入
+            minify: {
+                html5: true,
+                collapseWhitespace: true,  // 折叠空白
+                preserveLineBreaks: false, // 如果为true 折叠空白保留一个
+                minifyCSS: true,
+                minifyJS: true,
+                removeComments: false
+            }
+        }),
+
+```
+
+## **功能增强**
+### css 浏览器兼容
+
+  使用postCss loader 加autoPrefixer 后置处理器，自动获取浏览器的流行度和能够支持的属性，并根据这些数据帮你自动为 CSS 规则添加前缀。根据 Can I Use 规则（ https://caniuse.com/ ）
+```javascript
+    new HtmlWebpackPlugin({
+        template: path.join(__dirname, 'src/index.html'),
+        filename: 'index.html',
+        chunks: ['index'],
+        inject: true, // inject?: 'body' | 'head' | boolean | undefined; 资源注入
+        minify: {
+            html5: true,
+            collapseWhitespace: true,  // 折叠空白
+            preserveLineBreaks: false, // 如果为true 折叠空白保留一个
+            minifyCSS: true,
+            minifyJS: true,
+            removeComments: false
+        }
+    })
+```
