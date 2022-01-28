@@ -253,18 +253,25 @@ module -> chunk -> bundle
 
   使用postCss loader 加autoPrefixer 后置处理器，自动获取浏览器的流行度和能够支持的属性，并根据这些数据帮你自动为 CSS 规则添加前缀。根据 Can I Use 规则（ https://caniuse.com/ ）
 ```javascript
-    new HtmlWebpackPlugin({
-        template: path.join(__dirname, 'src/index.html'),
-        filename: 'index.html',
-        chunks: ['index'],
-        inject: true, // inject?: 'body' | 'head' | boolean | undefined; 资源注入
-        minify: {
-            html5: true,
-            collapseWhitespace: true,  // 折叠空白
-            preserveLineBreaks: false, // 如果为true 折叠空白保留一个
-            minifyCSS: true,
-            minifyJS: true,
-            removeComments: false
-        }
-    })
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  [
+                    'autoprefixer',
+                    {
+                      'overrideBrowserslist': [    
+                        "> 1%",
+                        "last 2 versions",
+                        "not ie <= 8",
+                        "ios >= 8",
+                        "android >= 4.0"
+                      ]
+                    },
+                  ],
+                ]
+              }
+            }
+          }
 ```

@@ -24,7 +24,32 @@ module.exports = {
       },
       { 
         test: /\.less$/, 
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'] 
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'less-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  [
+                    'autoprefixer',
+                    {
+                      'overrideBrowserslist': [    
+                        "> 1%",
+                        "last 2 versions",
+                        "not ie <= 8",
+                        "ios >= 8",
+                        "android >= 4.0"
+                      ]
+                    },
+                  ],
+                ]
+              }
+            }
+          }
+        ] 
       },
       { 
         test: /\.(jpg|png|gif|bmp|jpeg)$/, 
@@ -71,14 +96,14 @@ module.exports = {
       template: './src/search.html',
       filename: 'search.html',
       chunks: ['search'],
-      // minify: {
-      //   html5: true,
-      //   collapseWhitespace: true,  // 折叠空白
-      //   preserveLineBreaks: false, // 如果为true 折叠空白保留一个
-      //   minifyCSS: true,
-      //   minifyJS: true,
-      //   removeComments: false
-      // }
+      minify: {
+        html5: true,
+        collapseWhitespace: true,  // 折叠空白
+        preserveLineBreaks: false, // 如果为true 折叠空白保留一个
+        minifyCSS: true,
+        minifyJS: true,
+        removeComments: false
+      }
     }),
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
