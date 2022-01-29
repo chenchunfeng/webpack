@@ -275,3 +275,17 @@ module -> chunk -> bundle
             }
           }
 ```
+
+### 移动端兼容方案
+
+ - px2rem-loader + lib-flexible
+
+rem 单位， font-size of the root element
+
+> html内联lib-flexible
+> html-webpack-plugin 可以使用    <script><%= require('raw-loader!babel-loader!../node_modules/amfe-flexible') %></script>
+> 但是raw-loader需要指定0.5.1版本输出字符串，高版本会出来module object
+
+### 多⻚页⾯应用(MPA)  multiple page apply ?
+
+通过设计特别的目录结构，封装函数处理，导出entry output

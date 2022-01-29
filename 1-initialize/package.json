@@ -39,6 +39,9 @@
     "webpack-dev-server": "^4.7.3"
   },
   "dependencies": {
-    "mini-css-extract-plugin": "^2.5.3"
+    "amfe-flexible": "^2.2.1",
+    "mini-css-extract-plugin": "^2.5.3",
+    "px2rem-loader": "^0.1.9",
+    "raw-loader": "^0.5.1"
   }
 }
