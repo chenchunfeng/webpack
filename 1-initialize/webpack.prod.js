@@ -6,11 +6,46 @@ const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCssAssets = require('optimize-css-assets-webpack-plugin');
 const CssMinimizer = require('css-minimizer-webpack-plugin');
 
+const path = require('path');
+const glob = require('glob');
+const setMPA = function() {
+  const entry = {};
+  const htmlWebpackPlugins = [];
+  const entryFiles = glob.sync(path.join(__dirname, './src/*/index.js'));
+  entryFiles.forEach(fileUrl => {
+    // 匹配文件名做为entry入口
+    const match = fileUrl.match(/src\/(.*)\/index\.js/);
+    if (!match) return;
+    const pageName = match[1];
+
+    entry[pageName] = fileUrl;
+    htmlWebpackPlugins.push(    
+      new HtmlWebpackPlugin({
+        template: `./src/${pageName}/index.html`,
+        filename: `${pageName}.html`,
+        chunks: [pageName],
+        inject: true,
+        minify: {
+          html5: true,
+          collapseWhitespace: true,  // 折叠空白
+          preserveLineBreaks: false, // 如果为true 折叠空白保留一个
+          minifyCSS: true,
+          minifyJS: true,
+          removeComments: false
+        }
+      })
+    )
+  })
+  
+  return {
+    entry,
+    htmlWebpackPlugins
+  }
+}
+const {entry, htmlWebpackPlugins} = setMPA();
+
 module.exports = {
-  entry: {
-    index: './src/index.js',
-    search: './src/search.js'
-  },
+  entry,
   output: {
     path: __dirname + '/dist',
     filename: '[name].[chunkhash].js',
@@ -98,20 +133,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({template: './src/index.html', filename: 'index.html',chunks: ['index'],}),
-    new HtmlWebpackPlugin({
-      template: './src/search.html',
-      filename: 'search.html',
-      chunks: ['search'],
-      minify: {
-        html5: true,
-        collapseWhitespace: true,  // 折叠空白
-        preserveLineBreaks: false, // 如果为true 折叠空白保留一个
-        minifyCSS: true,
-        minifyJS: true,
-        removeComments: false
-      }
-    }),
+    ...htmlWebpackPlugins,
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: '[name]-[contenthash:8].css'

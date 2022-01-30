@@ -289,3 +289,8 @@ rem 单位， font-size of the root element
 ### 多⻚页⾯应用(MPA)  multiple page apply ?
 
 通过设计特别的目录结构，封装函数处理，导出entry output
+使用glob 遍历文件目录, 可以使用通配符*
+
+优势
+1. 页面之间解耦
+2. seo

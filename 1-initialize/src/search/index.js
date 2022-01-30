@@ -3,7 +3,7 @@
 import React from "react";
 import ReactDom from "react-dom" 
 import './search.less';
-import img from "./images/webpack.jpg"
+import img from "../images/webpack.jpg"
 import txt from "./hello.txt"
 
 class Search extends React.Component {
