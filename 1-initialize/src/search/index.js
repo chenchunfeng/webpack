@@ -5,9 +5,11 @@ import ReactDom from "react-dom"
 import './search.less';
 import img from "../images/webpack.jpg"
 import txt from "./hello.txt"
+import { helloFun } from '../common'
 
 class Search extends React.Component {
   render() {
+    helloFun();
     return (
       <div >
         <span className="search-text">{txt}</span>

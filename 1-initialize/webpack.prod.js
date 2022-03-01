@@ -5,6 +5,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCssAssets = require('optimize-css-assets-webpack-plugin');
 const CssMinimizer = require('css-minimizer-webpack-plugin');
+const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
 
 const path = require('path');
 const glob = require('glob');
@@ -138,6 +139,20 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name]-[contenthash:8].css'
     }),
+    new HtmlWebpackExternalsPlugin({          
+      externals: [
+        {
+          module: 'react',
+          entry: 'https://unpkg.com/react@17/umd/react.production.min.js',
+          global: 'React',
+        },
+        {
+          module: 'react-dom',
+          entry: 'https://unpkg.com/react-dom@17/umd/react-dom.production.min.js',
+          global: 'ReactDOM',
+        },
+      ]
+    })
   ],
   optimization: {
     // minimize: false, // 默认为true 使用terse处理
@@ -150,7 +165,37 @@ module.exports = {
       //    assetNameRegExp: /\.css$/g,  // 默认值
       //    cssProcessor: require('cssnano') // 默认值
       //  })
-      // new CssMinimizer()
-    ]
+      new CssMinimizer()
+    ],
+    splitChunks: {
+      // async：异步引入的库进行分离（默认）， initial： 同步引入的库进行分离， all：所有引入的库进行分离（推荐）
+      chunks: 'all',
+      minSize: 1024, // 抽离的公共包最小的大小，单位字节Byte
+      maxSize: 0, // 最大的大小
+      minChunks: 1, // 资源使用的次数(在多个页面使用到)， 大于1， 最小使用次数
+      maxAsyncRequests: 5, // 并发请求的数量
+      maxInitialRequests: 3, // 入口文件做代码分割最多能分成3个js文件
+      automaticNameDelimiter: '~', // 文件生成时的连接符
+      // automaticNameMaxLength: 30, // 自动自动命名最大长度
+      // name: true, //让cacheGroups里设置的名字有效
+      cacheGroups: { //当打包同步代码时,上面的参数生效
+        commons: {
+          name: 'commons',
+          chunks: 'all',
+          minChunks: 1
+        },
+        vendors: {
+          test: /[\\/]node_modules[\\/]/, //检测引入的库是否在node_modlues目录下的
+          priority: -10, //值越大,优先级越高.模块先打包到优先级高的组里
+          name: 'vendors'//把所有的库都打包到一个叫vendors.js的文件里
+        },
+        default: {
+          minChunks: 2, // 上面有
+          priority: -20, // 上面有
+          reuseExistingChunk: true //如果一个模块已经被打包过了,那么再打包时就忽略这个上模块
+        }
+      }
+    }
   },
+  devtool: false
 }
