@@ -6,13 +6,22 @@ import './search.less';
 import img from "../images/webpack.jpg"
 import txt from "./hello.txt"
 import { helloFun } from '../common'
-
+import { funA } from './tree-shaking';
 class Search extends React.Component {
   render() {
     helloFun();
+    funA();
+
+    const a = 1;
+    const b = 2;
+    const c = a + b;
+
+    if (false) {
+      console.log('不可到达')
+    }
     return (
       <div >
-        <span className="search-text">{txt}</span>
+        <span className="search-text">{txt + a}</span>
         <img src={ img } className="search-img"></img>
         <ButtonBox></ButtonBox>
       </div>

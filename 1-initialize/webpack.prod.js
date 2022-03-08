@@ -69,7 +69,7 @@ module.exports = {
                 remUnit: 75,
                 remPrecision: 8
             }
-        },
+          },
           'less-loader',
           {
             loader: 'postcss-loader',
@@ -170,8 +170,8 @@ module.exports = {
     splitChunks: {
       // async：异步引入的库进行分离（默认）， initial： 同步引入的库进行分离， all：所有引入的库进行分离（推荐）
       chunks: 'all',
-      minSize: 1024, // 抽离的公共包最小的大小，单位字节Byte
-      maxSize: 0, // 最大的大小
+      minSize: 1, // 抽离的公共包最小的大小，单位字节Byte
+      maxSize: 10240, // 最大的大小
       minChunks: 1, // 资源使用的次数(在多个页面使用到)， 大于1， 最小使用次数
       maxAsyncRequests: 5, // 并发请求的数量
       maxInitialRequests: 3, // 入口文件做代码分割最多能分成3个js文件
@@ -182,7 +182,7 @@ module.exports = {
         commons: {
           name: 'commons',
           chunks: 'all',
-          minChunks: 1
+          minChunks: 2
         },
         vendors: {
           test: /[\\/]node_modules[\\/]/, //检测引入的库是否在node_modlues目录下的
