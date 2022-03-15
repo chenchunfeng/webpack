@@ -5,7 +5,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCssAssets = require('optimize-css-assets-webpack-plugin');
 const CssMinimizer = require('css-minimizer-webpack-plugin');
-const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
+// const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
 
 const path = require('path');
 const glob = require('glob');
@@ -139,20 +139,20 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name]-[contenthash:8].css'
     }),
-    new HtmlWebpackExternalsPlugin({          
-      externals: [
-        {
-          module: 'react',
-          entry: 'https://unpkg.com/react@17/umd/react.production.min.js',
-          global: 'React',
-        },
-        {
-          module: 'react-dom',
-          entry: 'https://unpkg.com/react-dom@17/umd/react-dom.production.min.js',
-          global: 'ReactDOM',
-        },
-      ]
-    })
+    // new HtmlWebpackExternalsPlugin({          
+    //   externals: [
+    //     {
+    //       module: 'react',
+    //       entry: 'https://unpkg.com/react@17/umd/react.production.min.js',
+    //       global: 'React',
+    //     },
+    //     {
+    //       module: 'react-dom',
+    //       entry: 'https://unpkg.com/react-dom@17/umd/react-dom.production.min.js',
+    //       global: 'ReactDOM',
+    //     },
+    //   ]
+    // })
   ],
   optimization: {
     // minimize: false, // 默认为true 使用terse处理

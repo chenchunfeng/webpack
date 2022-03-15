@@ -1,6 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const { HotModuleReplacementPlugin } = require('webpack');
+const { HotModuleReplacementPlugin, optimize  } = require('webpack');
 
 const path = require('path');
 const glob = require('glob');
@@ -100,25 +100,12 @@ module.exports = {
     ...htmlWebpackPlugins,
     new CleanWebpackPlugin(),
     new HotModuleReplacementPlugin(),
-    new HtmlWebpackExternalsPlugin({          
-      externals: [
-        {
-          module: 'react',
-          entry: 'https://11.url.cn/now/lib/16.2.0/react.min.js',
-          global: 'React',
-        },
-        {
-          module: 'react-dom',
-          entry: 'https://11.url.cn/now/lib/16.2.0/react-dom.min.js',
-          global: 'ReactDOM',
-        },
-      ]})
 
   ],
   devServer: {
     static: __dirname + '/dist',
     hot: true
   },
-  // devtool: 'eval-cheap-module-source-map',
+  devtool: 'eval-cheap-module-source-map',
 
 }

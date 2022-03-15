@@ -8,6 +8,20 @@ import txt from "./hello.txt"
 import { helloFun } from '../common'
 import { funA } from './tree-shaking';
 class Search extends React.Component {
+
+  constructor() {
+    super();
+    this.state = {
+      Text: null
+    };
+  }
+  loadComponent() {
+    import('./async.js').then(Text => {
+      this.setState({
+        Text: Text.default
+      })
+    })
+  }
   render() {
     helloFun();
     funA();
@@ -19,10 +33,13 @@ class Search extends React.Component {
     if (false) {
       console.log('不可到达')
     }
+    const { Text } = this.state;
     return (
       <div >
         <span className="search-text">{txt + a}</span>
         <img src={ img } className="search-img"></img>
+        <button onClick={this.loadComponent.bind(this)}>动态</button>
+        {  Text ? <Text /> : '' }
         <ButtonBox></ButtonBox>
       </div>
     );
