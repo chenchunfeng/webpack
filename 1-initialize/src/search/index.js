@@ -7,12 +7,16 @@ import img from "../images/webpack.jpg"
 import txt from "./hello.txt"
 import { helloFun } from '../common'
 import { funA } from './tree-shaking';
-class Search extends React.Component {
+import largeNumberAdd from 'large-number-ccf';
+
+class Search extends React.Component { 
 
   constructor() {
     super();
     this.state = {
-      Text: null
+      Text: null,
+
+      
     };
   }
   loadComponent() {
@@ -25,6 +29,10 @@ class Search extends React.Component {
   render() {
     helloFun();
     funA();
+    console.log(largeNumberAdd(1,2))
+
+
+
 
     const a = 1;
     const b = 2;
@@ -50,7 +58,7 @@ class ButtonBox extends React.Component {
   constructor() {
     super()
     this.state = {
-      listItem: Array(1).fill(1),
+      listItem: Array(1).fill(1), 
     };
   }
   render() {

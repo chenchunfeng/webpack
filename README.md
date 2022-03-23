@@ -202,7 +202,7 @@ module -> chunk -> bundle
 
 指定webpack 打包配置文件 --config xxx
 
-> 虽然注意file-loader里面的hash 是指文件内容的hash 跟webpack项目的hash不一样
+> 需要注意file-loader里面的hash 是指文件内容的hash 跟webpack项目的hash不一样
 
 ## **代码压缩**
 
@@ -210,7 +210,7 @@ module -> chunk -> bundle
 1. js 代码压缩    v5 production 配置默认optimization.minimize = true
   - uglifyjs-webpack-plugin es6代码要配置ecma   
   - parallel-uglifyJs-webpack-plugin 非官方维护
-  - terse-webpack-plugin  v5 内置
+  - terser-webpack-plugin  v5 内置
 ```javascript
 
   terserOptions: {
@@ -294,3 +294,261 @@ rem 单位， font-size of the root element
 优势
 1. 页面之间解耦
 2. seo
+
+### source map
+
+在devtool 里面设置 string | false
+
+开发环境可以使用 eval-cheap-module-source-map    生产环境使用source-map   或者hidden-source-map
+
+development模式下devtool默认应该是'eval'
+production下默认是false
+
+### 外部扩展(Externals)
+
+生产环境配置  使用html-webpack-externals-plugin
+```javascript
+  new HtmlWebpackExternalsPlugin({          
+    externals: [
+      {
+        module: 'react',
+        entry: 'https://11.url.cn/now/lib/16.2.0/react.min.js',
+        global: 'React',
+      },
+      {
+        module: 'react-dom',
+        entry: 'https://11.url.cn/now/lib/16.2.0/react-dom.min.js',
+        global: 'ReactDOM',
+      },
+    ]})
+```
+
+> cdn 最好还是自己搭，第三个的很容易搞
+### 提取页面公共资源
+
+内置splitChunkPlugin,简单的来说就是Webpack中一个提取或分离代码的插件，主要作用是提取公共代码，防止代码被重复打包，拆分过大的js文件，合并零散的js文件。
+
+```javascript
+module.exports = {
+    //...
+    optimization: {
+      splitChunks: {
+        // async：异步引入的库进行分离（默认）， initial： 同步引入的库进行分离， all：所有引入的库进行分离（推荐）
+        chunks: 'async',
+        minSize: 30000, // 抽离的公共包最小的大小，单位字节Byte
+        maxSize: 0, // 最大的大小
+        minChunks: 1, // 资源使用的次数(在多个页面使用到)， 大于1， 最小使用次数
+        maxAsyncRequests: 5, // 并发请求的数量
+        maxInitialRequests: 3, // 入口文件做代码分割最多能分成3个js文件
+        automaticNameDelimiter: '~', // 文件生成时的连接符
+        // automaticNameMaxLength: 30, // 自动自动命名最大长度
+        // name: true, //让cacheGroups里设置的名字有效
+        cacheGroups: { //当打包同步代码时,上面的参数生效
+          vendors: {
+            test: /[\\/]node_modules[\\/]/, //检测引入的库是否在node_modlues目录下的
+            priority: -10, //值越大,优先级越高.模块先打包到优先级高的组里
+            filename: 'vendors.js'//把所有的库都打包到一个叫vendors.js的文件里
+          },
+          default: {
+            minChunks: 2, // 上面有
+            priority: -20, // 上面有
+            reuseExistingChunk: true //如果一个模块已经被打包过了,那么再打包时就忽略这个上模块
+          }
+        }
+      }
+    }
+  };
+
+  ```
+### tree shaking
+
+概念： 一个module里面有多个函数，但只引入使用到一个函数，但webpack打包还是会整体module函数打包进bundle里。tree shaking则只打包使用到的函数，没有用到的方法函数会在uglify阶段被删除
+
+- webpack 在production环境中，默认开启
+- webpack 默认⽀支持，在 .babelrc ⾥里里设置 modules: false 即可
+> 使用要求， 必须使用es6语法， common.js方式不支持
+
+摇到什么代码？ DCE   dead code elimination
+1. 不可到达的代码
+2. 代码执行不会用的变量 只写不读
+3. 代码执行结果不会被用到的
+
+```javascript
+if (false) {
+  console.log('永远不可到达的代码')
+}
+```
+
+ES6 模块的特点:
+- 只会在模块顶部出现
+- import的模块名只能是字符串常量
+- import binding是immutable的
+
+> 副作用这个概念来源于函数式编程(FP)，纯函数是没有副作用的，也不依赖外界环境或者改变外界环境。纯函数的概念是：接受相同的输入，任何情况下输出都是一样的。
+
+非纯函数存在副作用，副作用就是：相同的输入，输出不一定相同。或者这个函数会影响到外部变量、外部环境。
+
+函数如果调用了全局对象或者改变函数外部变量，则说明这个函数有副作用。
+
+### scope hoisting
+
+
+顾名思义，作用域提升,对于引入其它文件，webpack会打包生成两个函数，但如果使用了作用域提升，会打包成一个函数，减少内存消耗
+
+> 原理：将所有模块的代码按照引⽤用顺序放在一个函数作⽤用域⾥，然后适当的重命名变量以防⽌止变量名冲突。
+> 对比: 通过 scope hoisting 可以减少函数声明代码和内存开销。
+```javascript
+// a.js
+export function a() {
+  console.log('a file');
+}
+
+// b.js
+import { a } from 'a';
+console.log(a());
+
+
+// 最后出来的bundle.js
+[
+  (function (module, __webpack_exports__, __webpack_require__) {
+    var __WEBPACK_IMPORTED_MODULE_0__a_js__ = __webpack_require__(1);
+    console.log(__WEBPACK_IMPORTED_MODULE_0__a_js__["a"]());
+  }),
+  (function (module, __webpack_exports__, __webpack_require__) {
+    __webpack_exports__["a"] = function(){console.log('a file');};
+  })
+]
+
+// 开启scope hoisting 
+// 生产环境默认开启optimization.concatenateModules: true
+// webpack.config.dev.js
+{
+  mode: 'development'
+  plugins: [
+    new webpack.optimize.ModuleConcatenationPlugin();
+  ]
+}
+// 最后的bundle.js 大概是这样
+[
+  (function (module, __webpack_exports__, __webpack_require__) {
+    var a = function(){console.log('a file');};;
+    console.log(a);
+  })
+]
+```
+<!-- module.exports = {
+  resolve: {
+    // 针对 Npm 中的第三方模块优先采用 jsnext:main 中指向的 ES6 模块化语法的文件
+    mainFields: ['jsnext:main', 'browser', 'main']
+  },
+  plugins: [
+    // 开启 Scope Hoisting 功能
+    new webpack.optimize.ModuleConcatenationPlugin()
+  ]
+}; -->
+
+### 代码懒加载 lazy loading
+
+目前使用vue框架开发，在[vue-router文档](https://v3.router.vuejs.org/zh/guide/advanced/lazy-loading.html#%E6%8A%8A%E7%BB%84%E4%BB%B6%E6%8C%89%E7%BB%84%E5%88%86%E5%9D%97)中有说明
+
+这里面有两个知识点,配置这两点轻松实现路由组件的懒加载。
+
+- [异步组件](https://cn.vuejs.org/v2/guide/components-dynamic-async.html#%E5%BC%82%E6%AD%A5%E7%BB%84%E4%BB%B6)
+- Webpack 的代码分割功能
+
+>  使用import() 如果您使用的是 Babel，你将需要添加 syntax-dynamic-import (opens new window)插件，才能使 Babel 可以正确地解析语法。
+> vue-cli3生成的代码，包含dynamic-import 在@vue/cli-plugin-babel中。
+
+
+早期webpack 版本，可以使用[require.ensure](https://webpack.docschina.org/api/module-methods#requireensure)实现，不用import()
+```javascript
+require.ensure(
+  dependencies: String[],
+  callback: function(require),
+  errorCallback: function(error),
+  chunkName: String
+)
+// 1. dependencies：字符串数组，声明 callback 回调函数中所需要的所有模块。
+// 2. callback：当依赖项加载完成后，webpack 将会执行此函数，require 函数的实现，作为参数传入此函数中。当程序运行需要依赖时，可以使用 require() 来加载依赖。函数体可以使用此参数，来进一步执行 require() 模块。
+// 3. errorCallback：当 webpack 加载依赖失败时会执行此函数。
+// 4. chunkName：由 require.ensure 创建的 chunk 的名称。通过将相同 chunkName 传递给不同的 require.ensure 调用，我们可以将其代码合并到一个单独的 chunk 中，从而只产生一个浏览器必须加载的 bundle
+```
+
+> require.ensure() 是 webpack 特有的，已被 import() 取代。
+
+
+早期浏览器使用dynamic import 在babel 里面需要扩展插件
+
+```javascript
+  "plugins": [
+    "@babel/plugin-syntax-dynamic-import"
+  ]
+```
+### eslint配置
+
+使用alloyTeam eslint-config-alloy  配置
+
+
+三个阶段校验
+
+1. git precommit 里 通过安装 husky lint-staged 执行 eslint --fix
+2. 在webpack 打包的时候，可以通过eslint-loader处理 js文件
+3. 在ci阶段pipeline build指令前 校验
+
+
+### library 打包
+
+知识点，打包xxx.min.js版本 打包umd cjs esm amd
+
+- cjs common js   const a = require('xxxx')
+- amd  asynchronous module definition   require([module], callback);
+- umd  兼容AMD和commonJS规范的同时，还兼容全局引用的方式  define
+- esm  es6 module 
+
+> 1、导入：import {模块名A，模块名B...} from '模块路径'
+> 2、导出：export和export default
+> 3、import('模块路径').then()方法
+
+
+开发步骤： 
+
+1. npm init
+2. npm install webpack webpack-cli
+3. touch webpack.dev.js
+4. webpack配置,设置两个入口，为了打包出两个文件
+```javascript
+module.exports = {
+  // 默认不压缩，production会压缩
+  mode: 'none'，
+  enter: {
+    'large-number': path.resolve(__dirname, './src/index.js'),
+    'large-number.min': path.resolve(__dirname,'./src/index.js')
+  }
+  output: {
+    filename: '[name].js',
+    library: 'largeNumber',
+    libraryTarget: 'umd',
+    libraryExport: 'default'
+  },
+  optimization: {
+    minimize: true,
+    minimizer: {
+       [
+            new TerserPlugin({
+                include: /\.min\.js$/,
+            })
+        ]
+    }
+  }
+}
+```
+
+npm adduser
+
+填Username  Password  Email
+
+npm publish
+
+如果出现 403 Forbidden - PUT https://registry.npmjs.org/large-number-plus - You do not have permission to publish "large-number-plus". Are you logged in as the correct user?
+
+npm可能存在同名npm包
