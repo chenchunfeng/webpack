@@ -503,7 +503,7 @@ require.ensure(
 - cjs common js   const a = require('xxxx')
 - amd  asynchronous module definition   require([module], callback);
 - umd  兼容AMD和commonJS规范的同时，还兼容全局引用的方式  define
-- esm  es6 module 
+- esm  es6 module  import * as ABC from 'xxxx'
 
 > 1、导入：import {模块名A，模块名B...} from '模块路径'
 > 2、导出：export和export default
@@ -552,3 +552,99 @@ npm publish
 如果出现 403 Forbidden - PUT https://registry.npmjs.org/large-number-plus - You do not have permission to publish "large-number-plus". Are you logged in as the correct user?
 
 npm可能存在同名npm包
+
+下次提交记得修改版本号
+
+### SSR
+
+server side render 服务端渲染
+
+主要解决两个问题
+
+-  减少白屏时间
+-  SEO友好
+
+核心就是减少请求数，只有一个请求，服务端把数据处理好，直接返回
+
+react-dom/server 的 renderToString ⽅方法将React 组件渲染成字符串
+
+- ReactDomServer.renderToString()
+- VueServerRenderer.renderToString()
+
+
+
+
+webpack ssr 打包存在的问题
+浏览器器的全局变量量 (Node.js 中没有 document, window)
+
+- 组件适配：将不不兼容的组件根据打包环境进⾏行行适配
+- 请求适配：将 fetch 或者 ajax 发送请求的写法改成 isomorphic-fetch 或者 axios
+- 样式问题 (Node.js ⽆无法解析 css)
+  - ⽅方案⼀一：服务端打包通过 ignore-loader 忽略略掉 CSS 的解析
+  - ⽅方案⼆二：将 style-loader 替换成 isomorphic-style-loader
+
+
+问题记录
+
+1. 修改target
+```javascript
+  output: {
+    path: __dirname + '/dist',
+    filename: '[name]-server.js',
+    libraryTarget: 'umd',
+    globalObject: 'this',
+    publicPath: '',
+    libraryExport: 'default'
+  }
+```
+
+2. ssr导入 undefined
+
+- index-server.js 文件要module.exports
+- 要注释webpack config optimization 优化策略
+
+
+3. 处理 self undefined问题
+```javascript
+if (typeof self === 'undefined') {
+  global.self = {};
+}
+```
+
+4. 图片加载问题
+   
+app.use(express.static(path.join(__dirname,'../dist')));
+
+5. css样式加载问题
+
+无法使用 import './search.less';
+如果需要改造代码，可以使用const css = require('./search.less')  css.xxx 来使用
+
+```javascript
+  const css = require('./search.less')
+  <img src={ img } className={ css.searchImg}></img>
+```
+
+使用原有模板加载css
+```javascript
+const template = fs.readFileSync(path.join(__dirname, '../dist/search.html'), 'utf-8');
+<!-- html -->
+<div id="root"><!-- HTML_PLACEHOLDER --></div>
+<!-- js -->
+template.replace('<!-- HTML_PLACEHOLDER -->', str);
+```
+
+6. 初始化数据同步问题
+
+也是使用占位符，把占位替换为
+```javascript
+  template.replace('<!--INITIAL_DATA_PLACEHOLDER-->', `<script>window.__initial_data=${dataStr}</script>`);
+```
+
+6. 静态页面生成后，事件响应要怎样做？
+
+其实就在正常html 后面加入正常打包的 js代码
+```javascript
+// index.html
+<script src="./search.js"></script>
+```

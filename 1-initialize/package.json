@@ -8,7 +8,9 @@
     "build": "webpack",
     "watch": "webpack --watch",
     "dev": "webpack-dev-server --config webpack.dev.js --open",
-    "prod": "webpack --config webpack.prod.js"
+    "build:prod": "webpack --config webpack.prod.js",
+    "build:ssr": "webpack --config webpack.ssr.js",
+    "build:ssr-main": "webpack --config webpack.ssr-main.js"
   },
   "keywords": [],
   "author": "",

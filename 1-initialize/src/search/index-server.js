@@ -1,13 +1,16 @@
 'use strict';
 
 import React from "react";
-import ReactDom from "react-dom" 
+// import ReactDom from "react-dom" 
+
 import './search.less';
 import img from "../images/webpack.jpg"
 import txt from "./hello.txt"
 import { helloFun } from '../common'
 import { funA } from './tree-shaking';
 import largeNumberAdd from 'large-number-ccf';
+
+const { renderToString } = require('react-dom/server');
 
 class Search extends React.Component { 
 
@@ -20,7 +23,6 @@ class Search extends React.Component {
     };
   }
   loadComponent() {
-    debugger
     import('./async.js').then(Text => {
       this.setState({
         Text: Text.default
@@ -71,7 +73,6 @@ class ButtonBox extends React.Component {
     );
   }
   handlerClick()  {
-    debugger
     let { listItem } = this.state;
     
     this.setState({
@@ -97,4 +98,7 @@ class ListContent extends React.Component {
     );
   }
 }
-ReactDom.render(<Search />, document.getElementById('root'));
+// ReactDom.render(<Search />, document.getElementById('root'));
+
+// module.exports = renderToString(<Search />);
+export default <Search />;

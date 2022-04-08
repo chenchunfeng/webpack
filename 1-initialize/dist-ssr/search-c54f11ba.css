@@ -1,0 +1,18 @@
+.search-text {
+  font-size: 0.26666667rem;
+  color: #f00;
+  display: grid;
+  -webkit-transform: scale(0.5);
+  transform: scale(0.5);
+  border-radius: 50%;
+}
+
+.search-img {
+  width: 1.33333333rem;
+  height: 1.33333333rem;
+}
+
+.item-color div:nth-child(odd) {
+  color: green;
+  font-weight: bold;
+}
